@@ -13,7 +13,6 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 - 💬 **Real-time messaging** — instant chat updates without page reloads
 - 😍 **Reactions** — react to messages with emoji
 - 📁 **File uploads** — share files directly in chat
-- 👁️ **Read receipts** — see when messages have been seen
 - 🔐 **User authentication** — register, login, and session management
 - 🛡️ **Admin panel** — manage users and chat logs with ease
 - 🔒 **Secret admin access** — extra layer of admin security

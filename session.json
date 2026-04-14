@@ -1,0 +1,62 @@
+[
+    {
+        "session_id": "9apdiro81u49g2pi652ebnj4p1",
+        "remember_token": "d8766e45ce6f99283c3e7d4af84714229f65124b801e8f75fd3a2d4965a53cc0",
+        "username": "finn",
+        "name": "finn",
+        "email": "",
+        "is_admin": false,
+        "role": "user",
+        "login_time": 1773923282,
+        "expires_at": 1776515282,
+        "created_at": "2026-03-19 13:28:02"
+    },
+    {
+        "session_id": "udn6fkgsjti1tgkvghim9n3pc6",
+        "remember_token": "d9d0236ff6f69639ee258deea162ca7ff67d8da4331a358f9daba80367559a96",
+        "username": "testaccount",
+        "name": "testaccount",
+        "email": "",
+        "is_admin": true,
+        "role": "superadmin",
+        "login_time": 1774195743,
+        "expires_at": 1776787743,
+        "created_at": "2026-03-22 17:09:03"
+    },
+    {
+        "session_id": "2pfmdulgb4brp74tva4i2lp8l6",
+        "remember_token": "5f7ffb460d17b660eab165056a4890536605e882a908f572632f891267606a9a",
+        "username": "miyuukiii",
+        "name": "miyuukiii",
+        "email": "",
+        "is_admin": false,
+        "role": "user",
+        "login_time": 1775354883,
+        "expires_at": 1777946883,
+        "created_at": "2026-04-05 04:08:03"
+    },
+    {
+        "session_id": "dsfkas4mjfbm47rd191g39llso",
+        "remember_token": "3a48c1a3263f1c2ff2d3f10813ac930bfd739be3c09595625336cf9b9a41345c",
+        "username": "hanna",
+        "name": "hanna",
+        "email": "",
+        "is_admin": false,
+        "role": "user",
+        "login_time": 1776179846,
+        "expires_at": 1778771846,
+        "created_at": "2026-04-14 17:17:26"
+    },
+    {
+        "session_id": "b9g7ect3e2dii231h3aeb95f0a",
+        "remember_token": "44a44ac1894dd3ccfcd70f54616b30a9ca433b987959dfb4978965c096ab0eed",
+        "username": "admin",
+        "name": "bunnzzzz@superadmin",
+        "email": "",
+        "is_admin": true,
+        "role": "superadmin",
+        "login_time": 1776185967,
+        "expires_at": 1778777967,
+        "created_at": "2026-04-14 18:59:27"
+    }
+]

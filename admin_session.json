@@ -1,0 +1,14 @@
+[
+    {
+        "session_id": "b9g7ect3e2dii231h3aeb95f0a",
+        "remember_token": "44a44ac1894dd3ccfcd70f54616b30a9ca433b987959dfb4978965c096ab0eed",
+        "username": "admin",
+        "name": "bunnzzzz@superadmin",
+        "email": "",
+        "is_admin": true,
+        "role": "superadmin",
+        "login_time": 1776185967,
+        "expires_at": 1778777967,
+        "created_at": "2026-04-14 18:59:27"
+    }
+]

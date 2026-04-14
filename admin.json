@@ -1,0 +1,22 @@
+[
+    {
+        "id": "admin_001",
+        "username": "admin",
+        "password": "200121",
+        "name": "bunnzzzz@superadmin",
+        "role": "superadmin",
+        "created_at": "2024-01-15 00:00:00",
+        "status": "active",
+        "display_name": "admin"
+    },
+    {
+        "id": "admin_002",
+        "username": "testaccount",
+        "password": "200121",
+        "name": "testaccount",
+        "role": "superadmin",
+        "created_at": "2024-01-15 00:00:00",
+        "status": "active",
+        "display_name": "admin"
+    }
+]

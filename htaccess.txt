@@ -1,0 +1,49 @@
+# -------------------------------
+# Disable directory listing
+# -------------------------------
+Options -Indexes
+
+DirectoryIndex index.php index.html
+
+# -------------------------------
+# Security: Deny sensitive files
+# -------------------------------
+<FilesMatch "\.(sql|bak|env|tar|gz|txt)$">
+    Require all denied
+</FilesMatch>
+
+# Block ALL JSON files
+<FilesMatch "\.json$">
+    Require all denied
+</FilesMatch>
+
+# -------------------------------
+# Compatibility (old Apache)
+# -------------------------------
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(sql|bak|env|tar|gz|json|txt)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# -------------------------------
+# Protect .htaccess itself
+# -------------------------------
+<Files ".htaccess">
+    Require all denied
+</Files>
+
+# -------------------------------
+# Optional HTTPS redirect
+# -------------------------------
+#RewriteEngine On
+#RewriteCond %{HTTPS} off
+#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# -------------------------------
+# Hide .htaccess in directory listing
+# -------------------------------
+<IfModule mod_autoindex.c>
+    IndexIgnore .htaccess
+</IfModule>

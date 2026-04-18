@@ -11,7 +11,7 @@ if (preg_match('/\.(json|txt)$|\/register\.php$/', $uri)) {
     <title>SUP, HACKER</title>
     <meta name="description" content="flag{h3y_st4wp_r1ght_h3r3}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="messenger.png">
+    <link rel="icon" type="image/png" href="love.png">
     <style>
       html, body {
         margin: 0;

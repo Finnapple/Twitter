@@ -171,10 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GhostLAN — Change Password</title>
+  <title>Change Password</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
-  <link rel="icon" href="ghost.png" type="image/png" />
+  <link rel="icon" href="love.png" type="image/png" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
@@ -437,7 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     <?php else: ?>
     <div class="auth-box" id="changePasswordForm">
-      <h2 class="auth-title">GhostLAN</h2>
+      <h2 class="auth-title">Chatlify</h2>
       <p class="auth-subtitle">Change Admin Password</p>
 
       <?php if (!empty($error_message)): ?>

@@ -1,9 +1,7 @@
 <?php
 session_start();
 
-// --- REPLACED AUTHENTICATION LOGIC ---
-// Require a logged-in username; otherwise send to login
-// ensure username is treated as a string to avoid trim(array) errors
+// Ensure username is a string to avoid trim(array) errors
 $username = (string)($_SESSION['username'] ?? '');
 $username = trim($username);
 if ($username === '') {
@@ -11,7 +9,7 @@ if ($username === '') {
     exit;
 }
 
-// Load admin users
+// Load admin list from admin.json
 $admin_users = [];
 if (file_exists('admin.json')) {
     $adm = json_decode(file_get_contents('admin.json'), true);
@@ -21,32 +19,17 @@ if (file_exists('admin.json')) {
     }
 }
 
-// Load regular users (explicitly deny them)
-$regular_users = [];
-if (file_exists('users.json')) {
-    $usr = json_decode(file_get_contents('users.json'), true);
-    if (is_array($usr)) {
-        if (isset($usr['users']) && is_array($usr['users'])) $regular_users = $usr['users'];
-        else $regular_users = $usr;
+// Load admin session list from admin_session.json
+$admin_sessions = [];
+if (file_exists('admin_session.json')) {
+    $as = json_decode(file_get_contents('admin_session.json'), true);
+    if (is_array($as)) {
+        if (isset($as['admins']) && is_array($as['admins'])) $admin_sessions = $as['admins'];
+        else $admin_sessions = $as;
     }
 }
 
-// --- REPLACED NORMALIZATION LOGIC ---
-// helper: recursively collect scalar values from arrays and cast to strings
-$flatten_strings = function ($arr) {
-    $out = [];
-    if (!is_array($arr)) return $out;
-    foreach ($arr as $v) {
-        if (is_array($v)) {
-            $out = array_merge($out, $this($v)); // placeholder, will be replaced below
-        } elseif (is_scalar($v)) {
-            $out[] = (string)$v;
-        }
-    }
-    return $out;
-};
-
-// Implement recursion without using $this in closure (compatibility)
+// helper: flatten nested arrays into string values
 function __flatten_strings(array $arr) {
     $out = [];
     foreach ($arr as $v) {
@@ -60,21 +43,39 @@ function __flatten_strings(array $arr) {
 }
 
 // normalize lists safely
-$admin_users = array_values(array_unique(__flatten_strings($admin_users)));
-$admin_users = array_map('strtolower', array_map('trim', $admin_users));
+$admin_users    = array_values(array_unique(__flatten_strings($admin_users)));
+$admin_sessions = array_values(array_unique(__flatten_strings($admin_sessions)));
 
-$regular_users = array_values(array_unique(__flatten_strings($regular_users)));
-$regular_users = array_map('strtolower', array_map('trim', $regular_users));
+$admin_users    = array_map('strtolower', array_map('trim', $admin_users));
+$admin_sessions = array_map('strtolower', array_map('trim', $admin_sessions));
 
-$normalized_username = strtolower(trim((string)$username));
+$normalized_username = strtolower($username);
 
-// Allow only admin.json users; if user is in regular users or not in admins, redirect to index
-if (in_array($normalized_username, $admin_users, true)) {
+// Allow only if user exists in BOTH admin.json and admin_session.json
+if (in_array($normalized_username, $admin_users, true) && in_array($normalized_username, $admin_sessions, true)) {
     // allowed: proceed
 } else {
-    // explicitly deny regular users and all non-admins
-    header('Location: index.php');
+    header("Location: index.php");
     exit;
+}
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['ghostlan_admin']) || !$_SESSION['ghostlan_admin'] ||
+    !isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+    header("Location: index.php");
+    exit;
+}
+
+// Additional security check: verify session expiration (for admin only)
+$session_file = 'session.txt';
+if (file_exists($session_file)) {
+    $session_time = trim(file_get_contents($session_file));
+    if (!isset($_SESSION['login_time']) || $_SESSION['login_time'] < $session_time) {
+        session_unset();
+        session_destroy();
+        header("Location: index.php");
+        exit;
+    }
 }
 
 $error_message = '';

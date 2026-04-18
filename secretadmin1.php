@@ -31,6 +31,7 @@ if (file_exists('admin_session.json')) {
 }
 
 // helper: flatten nested arrays into string values
+if (!function_exists('__flatten_strings')) {
 function __flatten_strings(array $arr) {
     $out = [];
     foreach ($arr as $v) {
@@ -41,6 +42,7 @@ function __flatten_strings(array $arr) {
         }
     }
     return $out;
+}
 }
 
 // normalize lists safely

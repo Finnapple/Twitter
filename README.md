@@ -16,6 +16,7 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 - 🔐 **User authentication** — register, login, and session management
 - 🛡️ **Admin panel** — manage users and chat logs with ease
 - 🔒 **Secret admin access** — extra layer of admin security
+- 🚫 **Login rate limiting** — automatic IP-based brute-force protection with escalating blocks
 
 ---
 
@@ -24,7 +25,7 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 ```
 Chatlify/
 ├── index.php               # Main chat interface
-├── login.php               # Login page
+├── login.php               # Login page (with rate limiting)
 ├── register.php            # Registration page
 ├── send.php                # Handle sending messages
 ├── load.php                # Load/fetch messages
@@ -45,6 +46,7 @@ Chatlify/
 ├── session.json            # Active sessions
 ├── uploads_meta.json       # Upload metadata
 ├── secret.json             # Secret admin credentials
+├── rate_limit.json         # Rate limit tracking (auto-generated)
 ├── php.ini                 # PHP configuration
 ├── .htaccess               # Apache rewrite rules
 └── uploads/                # Uploaded files directory
@@ -120,6 +122,36 @@ Chatlify includes a protected admin panel for managing users and chat history.
 - Admin functions include viewing/deleting chat logs and managing users
 
 > ⚠️ **Important:** Change the default secret key in `secret.json` before deploying publicly!
+
+---
+
+## 🚫 Login Rate Limiting
+
+Chatlify includes built-in brute-force protection on the login page.
+
+- After **5 failed login attempts**, the IP address is automatically blocked
+- Block duration **escalates with each successive block** — starting at 10 minutes and doubling every time (10 min → 20 min → 40 min → ...)
+- Blocked users receive a generic error with no information about the block duration
+- The rate limit counter resets automatically after a successful login
+- Tracking is stored in `rate_limit.json` with file locking for concurrent safety
+- Supports real IP detection behind proxies and Cloudflare (`CF-Connecting-IP`, `X-Forwarded-For`, etc.)
+
+### Configuring Rate Limits
+
+At the top of `login.php`, two variables control the behavior:
+
+```php
+$rl_max_attempts = 5;   // Failed attempts before block triggers
+$rl_base_block   = 600; // Initial block duration in seconds (600 = 10 mins)
+```
+
+> ⚠️ **Important:** Ensure `rate_limit.json` and `rate_limit.json.lock` are **not publicly accessible**. Block them in `.htaccess`:
+> ```apache
+> <FilesMatch "^(rate_limit\.json|rate_limit\.json\.lock)$">
+>     Require all denied
+> </FilesMatch>
+> ```
+> To reset rate limits for all IPs, clear the contents of `rate_limit.json` to `{}`.
 
 ---
 

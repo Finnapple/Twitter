@@ -1,11 +1,76 @@
 <?php
 session_start();
 
+// ─── Rate Limiting ────────────────────────────────────────────────────────────
+// Tracks failed login attempts per IP. Block starts at 10 mins and multiplies
+// with each successive block. Duration is never shown to the user.
+$rl_file      = 'rate_limit.json';
+$rl_lock_file = 'rate_limit.json.lock';
+$rl_max_attempts = 5;
+$rl_base_block   = 600; // 10 minutes in seconds
+
+function rl_get_ip(): string {
+    foreach (['HTTP_CF_CONNECTING_IP','HTTP_X_FORWARDED_FOR','HTTP_X_REAL_IP','REMOTE_ADDR'] as $key) {
+        if (!empty($_SERVER[$key])) {
+            $ip = trim(explode(',', $_SERVER[$key])[0]);
+            if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
+        }
+    }
+    return '0.0.0.0';
+}
+
+function rl_load(string $file): array {
+    if (!file_exists($file)) return [];
+    $data = json_decode(file_get_contents($file), true);
+    return is_array($data) ? $data : [];
+}
+
+function rl_save(string $file, array $data): void {
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT), LOCK_EX);
+}
+
+$client_ip  = rl_get_ip();
+$rl_blocked = false;
+
+$rl_lock_handle = fopen($rl_lock_file, 'w');
+if ($rl_lock_handle && flock($rl_lock_handle, LOCK_EX)) {
+    try {
+        $rl_data   = rl_load($rl_file);
+        $ip_record = $rl_data[$client_ip] ?? [
+            'attempts'      => 0,
+            'block_count'   => 0,
+            'blocked_until' => 0,
+            'first_attempt' => time(),
+        ];
+
+        $now = time();
+
+        // Check if currently blocked
+        if ($ip_record['blocked_until'] > $now) {
+            $rl_blocked = true;
+        }
+
+        // On POST failure we'll increment — handled below after auth check.
+        // Store reference so the POST handler can write back.
+        $rl_data[$client_ip] = $ip_record;
+        rl_save($rl_file, $rl_data);
+    } finally {
+        flock($rl_lock_handle, LOCK_UN);
+        fclose($rl_lock_handle);
+    }
+}
+// ─── End Rate Limiting Setup ──────────────────────────────────────────────────
+
 // Initialize variables
 $login_error = "";
 
+// Show blocked error before processing form
+if ($rl_blocked) {
+    $login_error = "Too many failed login attempts. Please try again later.";
+}
+
 // Process login form
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !$rl_blocked) {
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
     
@@ -81,6 +146,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         if ($login_successful) {
+            // Reset rate-limit record on successful login
+            $rl_lock_handle2 = fopen($rl_lock_file, 'w');
+            if ($rl_lock_handle2 && flock($rl_lock_handle2, LOCK_EX)) {
+                try {
+                    $rl_data2 = rl_load($rl_file);
+                    unset($rl_data2[$client_ip]);
+                    rl_save($rl_file, $rl_data2);
+                } finally {
+                    flock($rl_lock_handle2, LOCK_UN);
+                    fclose($rl_lock_handle2);
+                }
+            }
             // Store in PHP session (for backward compatibility)
             $_SESSION['ghostlan_admin'] = true;
             $_SESSION['username'] = $username;
@@ -210,6 +287,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $login_error = "Invalid username or password";
             }
+
+            // ── Record failed attempt ─────────────────────────────────────────
+            $rl_lock_handle3 = fopen($rl_lock_file, 'w');
+            if ($rl_lock_handle3 && flock($rl_lock_handle3, LOCK_EX)) {
+                try {
+                    $rl_data3  = rl_load($rl_file);
+                    $ip_rec    = $rl_data3[$client_ip] ?? [
+                        'attempts'      => 0,
+                        'block_count'   => 0,
+                        'blocked_until' => 0,
+                        'first_attempt' => time(),
+                    ];
+
+                    $ip_rec['attempts']++;
+
+                    if ($ip_rec['attempts'] >= $rl_max_attempts) {
+                        // Escalate: 10min * 2^block_count (10, 20, 40, 80 … mins)
+                        $multiplier            = pow(2, $ip_rec['block_count']);
+                        $block_duration        = $rl_base_block * $multiplier;
+                        $ip_rec['blocked_until'] = time() + $block_duration;
+                        $ip_rec['block_count']++;
+                        $ip_rec['attempts']    = 0; // reset counter for next window
+                    }
+
+                    $rl_data3[$client_ip] = $ip_rec;
+                    rl_save($rl_file, $rl_data3);
+                } finally {
+                    flock($rl_lock_handle3, LOCK_UN);
+                    fclose($rl_lock_handle3);
+                }
+            }
+            // ── End record failed attempt ─────────────────────────────────────
         }
     }
 }

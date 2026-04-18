@@ -198,13 +198,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       -webkit-tap-highlight-color: transparent;
     }
 
+    html {
+      height: 100%;
+      height: 100dvh;
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-primary);
-      height: 100vh;
       margin: 0;
       padding: 0;
-      overflow: auto;
+      min-height: 100dvh;
       color: var(--text-primary);
       display: flex;
       align-items: center;
@@ -216,7 +220,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: 100%;
       padding: 20px;
     }
 
@@ -229,7 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       padding: 32px 28px;
       position: relative;
       animation: fadeIn 0.3s ease;
-      margin: auto;
     }
 
     @keyframes fadeIn {

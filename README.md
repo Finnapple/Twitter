@@ -41,7 +41,6 @@ Chatlify/
 ├── chatlogs.json           # Chat message storage
 ├── users.json              # User data storage
 ├── reactions.json          # Reactions storage
-├── seen.json               # Read receipts storage
 ├── session.json            # Active sessions
 ├── uploads_meta.json       # Upload metadata
 ├── secret.json             # Secret admin credentials

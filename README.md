@@ -1,4 +1,4 @@
-# 💬 Chatlify
+# Chatlify
 
 > **Real-time chat. Zero setup. Works everywhere.**
 
@@ -6,22 +6,22 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 
 ---
 
-## ✨ Features
+## Features
 
-- 🌐 **Works anywhere** — LAN, localhost, or live on the internet
-- 🗄️ **No database required** — uses flat JSON files for storage
-- 💬 **Real-time messaging** — instant chat updates without page reloads
-- 😍 **Reactions** — react to messages with emoji
-- 📁 **File uploads** — share files directly in chat
-- 🔐 **User authentication** — register, login, and session management
-- 🛡️ **Admin panel** — manage users and chat logs with ease
-- ✅ **Verified admin badge** — admin messages are marked with a blue checkmark visible to all users
-- 🔒 **Secret admin access** — extra layer of admin security
-- 🚫 **Login rate limiting** — automatic IP-based brute-force protection with escalating blocks
+- **Works anywhere** — LAN, localhost, or live on the internet
+- **No database required** — uses flat JSON files for storage
+- **Real-time messaging** — instant chat updates without page reloads
+- **Reactions** — react to messages with emoji
+- **File uploads** — share files directly in chat
+- **User authentication** — register, login, and session management
+- **Admin panel** — manage users and chat logs with ease
+- **Verified admin badge** — admin messages are marked with a blue checkmark visible to all users
+- **Secret admin access** — extra layer of admin security
+- **Login rate limiting** — automatic IP-based brute-force protection with escalating blocks
 
 ---
 
-## 🗂️ File Structure
+## File Structure
 
 ```
 Chatlify/
@@ -55,7 +55,7 @@ Chatlify/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 
@@ -92,7 +92,7 @@ Chatlify/
 
 ---
 
-## 🏠 Local Network (LAN) Usage
+## Local Network (LAN) Usage
 
 Want to chat with others on the same Wi-Fi?
 
@@ -114,7 +114,7 @@ Want to chat with others on the same Wi-Fi?
 
 ---
 
-## 🛡️ Admin Panel
+## Admin Panel
 
 Chatlify includes a protected admin panel for managing users and chat history.
 
@@ -122,13 +122,13 @@ Chatlify includes a protected admin panel for managing users and chat history.
 - Two-step admin authentication via `secretadmin1.php` and `secretadmin2.php`
 - Admin functions include viewing/deleting chat logs and managing users
 
-> ⚠️ **Important:** Change the default secret key in `secret.json` before deploying publicly!
+> **Important:** Change the default secret key in `secret.json` before deploying publicly!
 
 ---
 
-## ✅ Verified Admin Badge
+## Verified Admin Badge
 
-Admin users are visually distinguished in the chat with a **blue verified checkmark** (✓) displayed next to their name on every message — visible to all users in the room.
+Admin users are visually distinguished in the chat with a **blue verified checkmark** displayed next to their name on every message — visible to all users in the room.
 
 - The badge is automatically applied based on the `admin.json` list — no extra setup needed
 - Admins also see an **"Admin" label** in their name field as a reminder of their status
@@ -136,7 +136,7 @@ Admin users are visually distinguished in the chat with a **blue verified checkm
 
 ---
 
-## 🚫 Login Rate Limiting
+## Login Rate Limiting
 
 Chatlify includes built-in brute-force protection on the login page.
 
@@ -156,7 +156,7 @@ $rl_max_attempts = 5;   // Failed attempts before block triggers
 $rl_base_block   = 600; // Initial block duration in seconds (600 = 10 mins)
 ```
 
-> ⚠️ **Important:** Ensure `rate_limit.json` and `rate_limit.json.lock` are **not publicly accessible**. Block them in `.htaccess`:
+> **Important:** Ensure `rate_limit.json` and `rate_limit.json.lock` are **not publicly accessible**. Block them in `.htaccess`:
 > ```apache
 > <FilesMatch "^(rate_limit\.json|rate_limit\.json\.lock)$">
 >     Require all denied
@@ -166,7 +166,7 @@ $rl_base_block   = 600; // Initial block duration in seconds (600 = 10 mins)
 
 ---
 
-## 🌍 Deploying to the Web
+## Deploying to the Web
 
 1. Upload all files to your web host via FTP or your hosting panel
 2. Ensure PHP is enabled and the directory has write permissions
@@ -176,7 +176,7 @@ $rl_base_block   = 600; // Initial block duration in seconds (600 = 10 mins)
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 You can tweak PHP settings via `php.ini` — useful for adjusting upload size limits:
 
@@ -187,7 +187,7 @@ post_max_size = 10M
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, issues, and feature requests are welcome!
 
@@ -199,17 +199,17 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👤 Author
+## Author
 
 **Finnapple**
 - GitHub: [@Finnapple](https://github.com/Finnapple)
 
 ---
 
-<p align="center">Made with ❤️ and PHP</p>
+<p align="center">Made with love and PHP</p>

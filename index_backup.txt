@@ -148,6 +148,20 @@ function updateSessionAdminStatus($session_id, $is_admin) {
     file_put_contents('session.json', json_encode($sessions, JSON_PRETTY_PRINT));
 }
 
+// Load all admin display names for verified badge
+$admin_names = [];
+$admin_file = "admin.json";
+if (file_exists($admin_file)) {
+    $admin_json = file_get_contents($admin_file);
+    $admins_list = json_decode($admin_json, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($admins_list)) {
+        foreach ($admins_list as $a) {
+            if (isset($a['name'])) $admin_names[] = strtolower(trim($a['name']));
+            elseif (isset($a['username'])) $admin_names[] = strtolower(trim($a['username']));
+        }
+    }
+}
+
 // Check for dark mode preference in cookie
 $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled';
 ?>
@@ -157,7 +171,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
   <title>Chatlify</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta charset="UTF-8">
-  <link rel="icon" href="messenger.png" type="image/png" />
+  <link rel="icon" href="love.png" type="image/png" />
   <!-- Apply dark mode BEFORE page renders to prevent flash -->
   <script>
     (function() {
@@ -1500,6 +1514,77 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       background: var(--bg-input);
     }
 
+    /* ── Admin POV: verified badge inside name input ── */
+    .name-input-wrapper.is-admin-user #nameInput {
+      padding-right: 36px;
+    }
+    .admin-input-badge {
+      position: absolute;
+      right: 40px; /* leave room for upload button */
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      z-index: 11;
+    }
+    .name-input-wrapper.is-admin-user .admin-input-badge {
+      display: flex;
+    }
+    .admin-input-badge svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+    .admin-input-badge span {
+      font-size: 10px;
+      font-weight: 700;
+      color: #1b74e4;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* ── Verified (admin) badge on sender name ── */
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 3px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .verified-badge svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+    }
+    /* Tooltip on hover */
+    .verified-badge {
+      position: relative;
+      cursor: default;
+    }
+    .verified-badge::after {
+      content: 'Admin';
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(27, 116, 228, 0.92);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      letter-spacing: 0.3px;
+    }
+    .verified-badge:hover::after {
+      opacity: 1;
+    }
+
     /* Chat message line styles for load.php output */
     .message-line {
       margin-bottom: 2px;
@@ -1515,7 +1600,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
 <body tabindex="-1">
   <div class="app-container">
     <div class="header">
-      <img src="messenger.png" alt="GhostLAN ghost logo" style="height:28px;width:28px;margin-right:10px;vertical-align:middle;display:inline-block;">
+      <img src="love.png" alt="GhostLAN ghost logo" style="height:28px;width:28px;margin-right:10px;vertical-align:middle;display:inline-block;">
       <h1 style="display:inline-block;vertical-align:middle;margin:0;font-size:18px;font-weight:400;">Chatlify</h1>
       
       <div class="header-buttons">
@@ -1553,11 +1638,20 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       </div>
 
       <div class="input-section">
-        <div class="name-input-wrapper" style="position: relative;">
+        <div class="name-input-wrapper<?php echo $is_admin ? ' is-admin-user' : ''; ?>" style="position: relative;">
           <svg class="name-icon" viewBox="0 0 24 24">
             <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 4V6L21 9ZM15 10.26L21 7.26V9.26L15 12.26V10.26ZM12 7C16.42 7 20 8.79 20 11V13C20 15.21 16.42 17 12 17S4 15.21 4 13V11C4 8.79 7.58 7 12 7Z"/>
           </svg>
           <input type="text" id="nameInput" placeholder="" required readonly value="<?php echo htmlspecialchars($user_name); ?>">
+          <?php if ($is_admin): ?>
+          <span class="admin-input-badge" title="You are a verified admin">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="12" fill="#1b74e4"/>
+              <path d="M7 12.5l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Admin</span>
+          </span>
+          <?php endif; ?>
           <!-- Upload button at the far right -->
           <form id="uploadForm" enctype="multipart/form-data" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0;">
             <input type="file" id="fileInput" name="files[]" multiple style="display:none;" />
@@ -1641,6 +1735,31 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
     // Get the user's name and admin status from PHP
     const userName = "<?php echo addslashes($user_name); ?>";
     const isAdmin = <?php echo $is_admin ? 'true' : 'false'; ?>;
+    // Admin display names for verified badge (lowercased)
+    const adminNames = <?php echo json_encode($admin_names); ?>;
+
+    // ── Verified badge: inject checkmark next to admin sender names ──
+    function applyAdminBadges() {
+      if (!adminNames || adminNames.length === 0) return;
+      document.querySelectorAll('.message-sender').forEach(function(el) {
+        // Skip if badge already added
+        if (el.querySelector('.verified-badge')) return;
+        const senderText = el.textContent.trim().toLowerCase();
+        if (adminNames.includes(senderText)) {
+          injectBadge(el);
+        }
+      });
+    }
+    function injectBadge(el) {
+      const badge = document.createElement('span');
+      badge.className = 'verified-badge';
+      badge.title = 'Admin';
+      badge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="#1b74e4"/>
+        <path d="M7 12.5l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+      el.appendChild(badge);
+    }
     
     // Logout modal DOM refs
     const logoutModal = document.getElementById("logoutModal");
@@ -1948,6 +2067,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
               } else {
                 showScrollIndicator(onlyNew.filter(el => el.classList.contains('message-container')).length);
               }
+              applyAdminBadges();
               isLoadingChat = false;
               return;
             }
@@ -1973,6 +2093,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
           } else {
             isFirstLoad = false;
           }
+          applyAdminBadges();
         }
         isLoadingChat = false;
       };

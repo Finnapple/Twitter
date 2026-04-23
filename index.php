@@ -555,22 +555,6 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       order: 1;
     }
 
-    /* ── Emoji-only messages: no bubble, no time, big emoji ── */
-    .message-container.emoji-only .message-bubble {
-      background: none !important;
-      box-shadow: none !important;
-      padding: 0 4px !important;
-      border-radius: 0 !important;
-    }
-    .message-container.emoji-only .message-content {
-      font-size: 42px !important;
-      line-height: 1.15 !important;
-      margin-bottom: 0 !important;
-    }
-    .message-container.emoji-only .message-info {
-      display: none !important;
-    }
-
     /* Media (image / audio) — no bubble background */
     .message-media {
       max-width: 65%;
@@ -1956,30 +1940,6 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
         .slice(0, 2);
     }
 
-    // ── Emoji-only detection ──
-    function isEmojiOnly(text) {
-      if (!text || !text.trim()) return false;
-      // Strip all emoji characters and zero-width joiners, variation selectors, skin tone modifiers
-      const stripped = text.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F\u200D\u20E3\u{1F3FB}-\u{1F3FF}]/gu, '').replace(/\s/g, '');
-      return stripped.length === 0;
-    }
-
-    // Mark emoji-only message containers with a CSS class
-    function applyEmojiOnly(root) {
-      const containers = (root || document).querySelectorAll('.message-container:not(.emoji-only-checked)');
-      containers.forEach(function(container) {
-        container.classList.add('emoji-only-checked');
-        const contentEl = container.querySelector('.message-content');
-        if (!contentEl) return;
-        // Skip media messages (images/audio)
-        if (container.querySelector('.message-media, img, audio, video')) return;
-        const text = contentEl.textContent || '';
-        if (isEmojiOnly(text)) {
-          container.classList.add('emoji-only');
-        }
-      });
-    }
-
     // Get current time formatted
     function getCurrentTime() {
       const now = new Date();
@@ -2108,7 +2068,6 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
                 showScrollIndicator(onlyNew.filter(el => el.classList.contains('message-container')).length);
               }
               applyAdminBadges();
-              applyEmojiOnly();
               isLoadingChat = false;
               return;
             }
@@ -2135,7 +2094,6 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
             isFirstLoad = false;
           }
           applyAdminBadges();
-          applyEmojiOnly();
         }
         isLoadingChat = false;
       };

@@ -15,6 +15,7 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 - 📁 **File uploads** — share files directly in chat
 - 🔐 **User authentication** — register, login, and session management
 - 🛡️ **Admin panel** — manage users and chat logs with ease
+- ✅ **Verified admin badge** — admin messages are marked with a blue checkmark visible to all users
 - 🔒 **Secret admin access** — extra layer of admin security
 - 🚫 **Login rate limiting** — automatic IP-based brute-force protection with escalating blocks
 
@@ -122,6 +123,16 @@ Chatlify includes a protected admin panel for managing users and chat history.
 - Admin functions include viewing/deleting chat logs and managing users
 
 > ⚠️ **Important:** Change the default secret key in `secret.json` before deploying publicly!
+
+---
+
+## ✅ Verified Admin Badge
+
+Admin users are visually distinguished in the chat with a **blue verified checkmark** (✓) displayed next to their name on every message — visible to all users in the room.
+
+- The badge is automatically applied based on the `admin.json` list — no extra setup needed
+- Admins also see an **"Admin" label** in their name field as a reminder of their status
+- The badge includes a hover tooltip that reads "Admin"
 
 ---
 

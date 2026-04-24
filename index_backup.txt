@@ -2497,25 +2497,25 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       userScrolledUp = false;
       scrollToBottom(true);
 
-      // ── Fire-and-forget: re-enable the button IMMEDIATELY after firing the XHR.
-      // send.php is a tiny text write — but if upload.php is holding the PHP session
-      // lock, send.php will be queued on the server. We don't want that to block
-      // the user from typing/sending the next message. The polling (loadChat every 2s)
-      // will pick up the confirmed message and replace the sending-indicator naturally.
+      // Delay the actual POST by 0.3s to reduce rapid-fire spamming.
+      // Keep the optimistic "Sending..." bubble visible immediately.
+      const SEND_DELAY_MS = 300;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "send.php", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr.send("name=" + encodeURIComponent(name) + "&message=" + encodeURIComponent(message));
+      const payload = "name=" + encodeURIComponent(name) + "&message=" + encodeURIComponent(message);
 
-      // Re-enable immediately — don't wait for server response
-      isSending = false;
-      sendButton.textContent = "Send";
-      sendButton.disabled = false;
+      // Fire the XHR after a short delay. Re-enable send controls only after the XHR is dispatched.
+      const sendTimer = setTimeout(function() {
+        try { xhr.send(payload); } catch (e) { /* ignore send errors here */ }
+        isSending = false;
+        sendButton.textContent = "Send";
+        sendButton.disabled = false;
+      }, SEND_DELAY_MS);
 
       xhr.onload = function () {
         if (this.status === 200) {
-          // Force a fresh load — the current one may still be in-flight from
-          // a previous rapid send, and we must not miss this confirmation.
+          // Ensure chat is refreshed to pick up the confirmed message
           loadChatForced();
         } else {
           // Server error — remove only THIS send's optimistic bubble

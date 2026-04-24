@@ -387,6 +387,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$rl_blocked) {
       align-items: center;
       justify-content: center;
       transition: background-color 0.3s ease, color 0.2s ease;
+      user-select: none;
     }
 
     .auth-container {

@@ -302,6 +302,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       overflow: hidden;
       color: var(--text-primary);
       transition: background-color 0.3s ease, color 0.2s ease;
+      user-select: none;
     }
 
     .app-container {

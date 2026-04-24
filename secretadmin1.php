@@ -215,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
     }
 
     .auth-container {

@@ -116,8 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     });
 
     // Trim to 100 messages max — remove oldest first, delete upload files too
-    if (count($messages) > 100) {
-        $trimmed = array_slice($messages, 0, count($messages) - 100);
+    if (count($messages) > 50) {
+        $trimmed = array_slice($messages, 0, count($messages) - 50);
         foreach ($trimmed as $old) {
             if (($old['type'] ?? '') === 'upload') {
                 $filePath = $uploads_dir . $old['message'];
@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
-        $messages = array_slice($messages, -100);
+        $messages = array_slice($messages, -50);
     }
 
     // Save back to JSON

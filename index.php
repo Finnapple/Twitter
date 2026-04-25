@@ -587,14 +587,9 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       color: inherit;
     }
 
-    /* Keep the sender/time info visible but style neutrally */
-    .sent .message-bubble.emoji-only .message-info {
-      color: var(--text-secondary);
-    }
-
-    .sent .message-bubble.emoji-only .message-sender,
-    .sent .message-bubble.emoji-only .message-time {
-      color: var(--text-secondary) !important;
+    /* Hide sender name and time for emoji-only messages */
+    .message-bubble.emoji-only .message-info {
+      display: none !important;
     }
 
     /* Media (image / audio) — no bubble background */
@@ -2045,25 +2040,26 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       content.className = 'message-content';
       content.textContent = message;
 
-      const info = document.createElement('div');
-      info.className = 'message-info';
-
-      const sender = document.createElement('span');
-      sender.className = 'message-sender';
-      sender.textContent = isSent ? 'you' : name.toLowerCase();
-
-      const time = document.createElement('span');
-      time.className = 'message-time';
-      time.textContent = timestamp || getCurrentTime();
-
-      info.appendChild(sender);
-      info.appendChild(time);
       bubble.appendChild(content);
-      bubble.appendChild(info);
 
-      // If the message is emoji-only, strip the bubble container styling
+      // If the message is emoji-only, strip the bubble container styling and skip sender/time
       if (isEmojiOnly(message)) {
         bubble.classList.add('emoji-only');
+      } else {
+        const info = document.createElement('div');
+        info.className = 'message-info';
+
+        const sender = document.createElement('span');
+        sender.className = 'message-sender';
+        sender.textContent = isSent ? 'you' : name.toLowerCase();
+
+        const time = document.createElement('span');
+        time.className = 'message-time';
+        time.textContent = timestamp || getCurrentTime();
+
+        info.appendChild(sender);
+        info.appendChild(time);
+        bubble.appendChild(info);
       }
 
       messageContainer.appendChild(avatar);

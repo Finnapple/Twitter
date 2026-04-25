@@ -115,9 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         return strtotime($a['timestamp']) <=> strtotime($b['timestamp']);
     });
 
-    // Trim to 100 messages max — remove oldest first, delete upload files too
-    if (count($messages) > 50) {
-        $trimmed = array_slice($messages, 0, count($messages) - 50);
+    // Trim to 5000 messages max — remove oldest first, delete upload files too
+    if (count($messages) > 5000) {
+        $trimmed = array_slice($messages, 0, count($messages) - 5000);
         foreach ($trimmed as $old) {
             if (($old['type'] ?? '') === 'upload') {
                 $filePath = $uploads_dir . $old['message'];
@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
-        $messages = array_slice($messages, -50);
+        $messages = array_slice($messages, -5000);
     }
 
     // Save back to JSON

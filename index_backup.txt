@@ -302,6 +302,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       overflow: hidden;
       color: var(--text-primary);
       transition: background-color 0.3s ease, color 0.2s ease;
+      user-select: none;
     }
 
     .app-container {
@@ -445,6 +446,21 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       will-change: opacity, transform;
     }
 
+    /* Floating sending/upload overlay — positioned above the input area */
+    #sending-overlay-container {
+      position: absolute;
+      right: 12px;
+      bottom: calc(100% + 8px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 180;
+      pointer-events: none;
+    }
+    #sending-overlay-container .message-container {
+      pointer-events: auto;
+    }
+
     /* New message animation — only applied to freshly added messages */
     .message-container.msg-animate-sent {
       animation: msgPopSent 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -553,6 +569,32 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       color: var(--text-bubble-received);
       border-bottom-left-radius: 4px;
       order: 1;
+    }
+
+    /* Emoji-only messages — no bubble container, just big emoji */
+    .message-bubble.emoji-only {
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
+
+    .message-bubble.emoji-only .message-content {
+      font-size: 36px !important;
+      line-height: 1.2 !important;
+      color: inherit;
+    }
+
+    /* Keep the sender/time info visible but style neutrally */
+    .sent .message-bubble.emoji-only .message-info {
+      color: var(--text-secondary);
+    }
+
+    .sent .message-bubble.emoji-only .message-sender,
+    .sent .message-bubble.emoji-only .message-time {
+      color: var(--text-secondary) !important;
     }
 
     /* Media (image / audio) — no bubble background */
@@ -1732,6 +1774,19 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
     const secretError = document.getElementById("secretError");
     const darkModeToggle = document.getElementById("darkModeToggle");
 
+    // Helper: get or create the floating sending overlay container
+    function getSendingOverlay() {
+      let overlay = document.getElementById('sending-overlay-container');
+      if (!overlay) {
+        const inputArea = document.querySelector('.input-area');
+        if (!inputArea) return null;
+        overlay = document.createElement('div');
+        overlay.id = 'sending-overlay-container';
+        inputArea.appendChild(overlay);
+      }
+      return overlay;
+    }
+
     // Get the user's name and admin status from PHP
     const userName = "<?php echo addslashes($user_name); ?>";
     const isAdmin = <?php echo $is_admin ? 'true' : 'false'; ?>;
@@ -1940,6 +1995,34 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
         .slice(0, 2);
     }
 
+    // ── Emoji-only detection ──
+    // Returns true if the entire string consists of only emoji characters
+    // (and optional whitespace between them). Uses Unicode emoji ranges.
+    function isEmojiOnly(str) {
+      if (!str || !str.trim()) return false;
+      // Strip all whitespace and check that what remains is only emoji codepoints
+      const stripped = str.replace(/\s/g, '');
+      if (!stripped) return false;
+      // Regex: matches sequences of emoji characters (including ZWJ sequences,
+      // variation selectors, regional indicators, keycap sequences, etc.)
+      const emojiRegex = /^(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}|\p{Emoji}\uFE0F|\uD83C[\uDDE0-\uDDFF][\uD83C][\uDDE0-\uDDFF]|[\u0023\u002A\u0030-\u0039]\uFE0F?\u20E3|\u200D)+$/u;
+      return emojiRegex.test(stripped);
+    }
+
+    // Apply emoji-only class to all rendered message bubbles in the chat
+    function applyEmojiOnly() {
+      chatBox.querySelectorAll('.message-bubble').forEach(function(bubble) {
+        const contentEl = bubble.querySelector('.message-content');
+        if (!contentEl) return;
+        const text = contentEl.textContent || '';
+        if (isEmojiOnly(text)) {
+          bubble.classList.add('emoji-only');
+        } else {
+          bubble.classList.remove('emoji-only');
+        }
+      });
+    }
+
     // Get current time formatted
     function getCurrentTime() {
       const now = new Date();
@@ -1978,6 +2061,11 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
       bubble.appendChild(content);
       bubble.appendChild(info);
 
+      // If the message is emoji-only, strip the bubble container styling
+      if (isEmojiOnly(message)) {
+        bubble.classList.add('emoji-only');
+      }
+
       messageContainer.appendChild(avatar);
       messageContainer.appendChild(bubble);
 
@@ -1985,6 +2073,15 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
     }
 
     // Helper: extract a stable key from a message element (sender + time + content text + reactions)
+    // Note: we also add a "stable" key helper that excludes reactions so we can
+    // detect reaction-only updates and avoid re-rendering the entire chat.
+    function getMessageStableKey(el) {
+      const sender  = (el.querySelector('.message-sender')?.textContent?.trim() || '').toLowerCase();
+      const time    = el.querySelector('.message-time')?.textContent?.trim() || '';
+      const content = el.querySelector('.message-content')?.textContent?.trim() || '';
+      return sender + '|' + time + '|' + content;
+    }
+
     function getMessageKey(el) {
       const sender    = (el.querySelector('.message-sender')?.textContent?.trim() || '').toLowerCase();
       const time      = el.querySelector('.message-time')?.textContent?.trim() || '';
@@ -2051,49 +2148,107 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
                 }
                 chatBox.appendChild(el);
               });
+              // Preserve visual scroll position when removing temporary indicators
+              const prevScrollTop = chatBox.scrollTop;
+              const prevScrollHeight = chatBox.scrollHeight;
+
               // Remove ALL pending sending-indicators (one per rapid-fire send)
-              chatBox.querySelectorAll('[data-sending-uid]').forEach(el => el.remove());
+              document.querySelectorAll('[data-sending-uid]').forEach(el => el.remove());
               // Only remove upload indicators for uploads that are fully done
               if (!isUploading()) {
-                chatBox.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
+                document.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
               }
               // If still uploading, indicators stay pinned where they are — don't move them
+
+              // Adjust scrollTop by the change in scrollHeight so the viewport
+              // doesn't visibly jump when elements are removed.
+              const newScrollHeight = chatBox.scrollHeight;
+              const delta = newScrollHeight - prevScrollHeight;
+              chatBox.scrollTop = Math.max(0, prevScrollTop + delta);
 
               if (isFirstLoad) {
                 isFirstLoad = false;
                 scrollToBottom(true, true); // instant on first load
               } else if (wasAtBottom || shouldAutoScroll) {
-                setTimeout(() => scrollToBottom(true, false), 100);
+                // Use RAF to schedule a smooth scroll once layout has settled.
+                requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom(true, false)));
               } else {
                 showScrollIndicator(onlyNew.filter(el => el.classList.contains('message-container')).length);
               }
               applyAdminBadges();
+              applyEmojiOnly();
               isLoadingChat = false;
               return;
             }
           }
 
+            // Handle reaction-only updates without full re-render.
+            // If the number of messages is the same and every message's stable key
+            // (sender|time|content) matches, but the reactions differ, update only
+            // the `.msg-reactions` container in-place to avoid layout jumps.
+            if (newMessages.length === currentMessages.length) {
+              let onlyReactionsChanged = true;
+              for (let i = 0; i < newMessages.length; i++) {
+                if (getMessageStableKey(newMessages[i]) !== getMessageStableKey(currentMessages[i])) {
+                  onlyReactionsChanged = false;
+                  break;
+                }
+              }
+              if (onlyReactionsChanged) {
+                for (let i = 0; i < newMessages.length; i++) {
+                  const cur = currentMessages[i];
+                  const neu = newMessages[i];
+                  const newReacts = neu.querySelector('.msg-reactions');
+                  const curReacts = cur.querySelector('.msg-reactions');
+                  if (newReacts && curReacts) {
+                    curReacts.innerHTML = newReacts.innerHTML;
+                  } else if (newReacts && !curReacts) {
+                    const wrapper = cur.querySelector('.bubble-wrapper');
+                    const clone = newReacts.cloneNode(true);
+                    if (wrapper) wrapper.appendChild(clone);
+                    else cur.appendChild(clone);
+                  } else if (!newReacts && curReacts) {
+                    curReacts.remove();
+                  }
+                }
+                applyAdminBadges();
+                applyEmojiOnly();
+                isLoadingChat = false;
+                return;
+              }
+            }
+
           // Fallback: full re-render (e.g. chat was cleared or message edited)
+          // Preserve scroll position where possible to avoid visual jumps.
+          const prevScrollTopFull = chatBox.scrollTop;
+          const prevScrollHeightFull = chatBox.scrollHeight;
+
           currentMessages.forEach(el => el.remove());
           newMessages.forEach(el => chatBox.appendChild(el));
+
           // Remove ALL pending sending-indicators
-          chatBox.querySelectorAll('[data-sending-uid]').forEach(el => el.remove());
+          document.querySelectorAll('[data-sending-uid]').forEach(el => el.remove());
           // Only remove upload indicators when all uploads are fully done
           if (!isUploading()) {
-            chatBox.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
+            document.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
           }
-          // If still uploading, indicators stay pinned — they are already excluded from
-          // currentMessages so they survived the re-render above untouched
+
+          const newScrollHeightFull = chatBox.scrollHeight;
+          const deltaFull = newScrollHeightFull - prevScrollHeightFull;
+          chatBox.scrollTop = Math.max(0, prevScrollTopFull + deltaFull);
 
           const currentMessageCount = chatBox.querySelectorAll('.message-container').length;
           if (currentMessageCount > 0 && (wasAtBottom || shouldAutoScroll || isFirstLoad)) {
             const doInstant = isFirstLoad;
             isFirstLoad = false;
-            scrollToBottom(true, doInstant);
+            // Use RAF for smooth scroll after re-render, instant on first load.
+            if (doInstant) scrollToBottom(true, true);
+            else requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom(true, false)));
           } else {
             isFirstLoad = false;
           }
           applyAdminBadges();
+          applyEmojiOnly();
         }
         isLoadingChat = false;
       };
@@ -2206,7 +2361,10 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
           </div>
           <div class="message-avatar">${initials}</div>
         `;
-        chatBox.appendChild(ind);
+        // Append restored upload indicator to floating overlay so it doesn't reflow chat
+        const overlay1 = getSendingOverlay();
+        if (overlay1) overlay1.appendChild(ind);
+        else chatBox.appendChild(ind);
         uploadingCount++;
         shouldAutoScroll = true;
         scrollToBottom(true);
@@ -2218,14 +2376,14 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
         loadChat();
         polls++;
         // If no more upload indicators in DOM, all done
-        if (!chatBox.querySelector('[data-upload-uid]')) {
+        if (!document.querySelector('[data-upload-uid]')) {
           sessionStorage.removeItem('chatlify_uploads');
           uploadingCount = 0;
           clearInterval(stalledInterval);
           return;
         }
         if (polls > 60) { // ~2 min timeout
-          chatBox.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
+          document.querySelectorAll('[data-upload-uid]').forEach(el => el.remove());
           sessionStorage.removeItem('chatlify_uploads');
           uploadingCount = 0;
           clearInterval(stalledInterval);
@@ -2300,10 +2458,13 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
         </div>
         <div class="message-avatar">${initials}</div>
       `;
-      chatBox.appendChild(uploadIndicator);
+      // Append upload indicator into the floating overlay so it doesn't disrupt chat flow
+      const overlay2 = getSendingOverlay();
+      if (overlay2) overlay2.appendChild(uploadIndicator);
+      else chatBox.appendChild(uploadIndicator);
       shouldAutoScroll = true;
       userScrolledUp = false;
-      scrollToBottom(true);
+      if (isAtBottom()) scrollToBottom(true);
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'upload.php', true);
@@ -2492,10 +2653,14 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
         <div class="message-avatar">${getInitials(name)}</div>
       `;
       sendingBubble.addEventListener('animationend', () => sendingBubble.classList.remove('msg-animate-sent'), { once: true });
-      chatBox.appendChild(sendingBubble);
+      // Append optimistic sending bubble into floating overlay so it doesn't reflow chat
+      const overlay3 = getSendingOverlay();
+      if (overlay3) overlay3.appendChild(sendingBubble);
+      else chatBox.appendChild(sendingBubble);
       shouldAutoScroll = true;
       userScrolledUp = false;
-      scrollToBottom(true);
+      // Only scroll if user was at bottom to avoid jarring jumps when overlay is used
+      if (isAtBottom()) scrollToBottom(true, true);
 
       // Delay the actual POST by 0.3s to reduce rapid-fire spamming.
       // Keep the optimistic "Sending..." bubble visible immediately.

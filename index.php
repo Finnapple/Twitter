@@ -2660,7 +2660,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
 
       // Delay the actual POST by 0.3s to reduce rapid-fire spamming.
       // Keep the optimistic "Sending..." bubble visible immediately.
-      const SEND_DELAY_MS = 300;
+      const SEND_DELAY_MS = 100;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "send.php", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

@@ -1,8 +1,8 @@
-# Chatlify
+# Twitter
 
 > **Real-time chat. Zero setup. Works everywhere.**
 
-Chatlify is a modern, lightweight real-time chat application built with **PHP** and **vanilla JavaScript** — no database, no frameworks, no headaches. Whether you're on a local network or hosting it on the web, Chatlify just works.
+Twitter is a modern, lightweight real-time chat application built with **PHP** and **vanilla JavaScript** — no database, no frameworks, no headaches. Whether you're on a local network or hosting it on the web, Twitter just works.
 
 ---
 
@@ -24,7 +24,7 @@ Chatlify is a modern, lightweight real-time chat application built with **PHP** 
 ## File Structure
 
 ```
-Chatlify/
+Twitter/
 ├── index.php               # Main chat interface
 ├── login.php               # Login page (with rate limiting)
 ├── register.php            # Registration page
@@ -68,8 +68,8 @@ Chatlify/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Finnapple/Chatlify.git
-   cd Chatlify
+   git clone https://github.com/Finnapple/Twitter.git
+   cd Twitter
    ```
 
 2. **Set permissions** (Linux/Mac)
@@ -87,7 +87,7 @@ Chatlify/
    Then open `http://localhost:8080` in your browser.
 
    **Option B — Apache/Nginx:**
-   Drop the folder into your web root (e.g., `/var/www/html/chatlify`) and navigate to it in your browser.
+   Drop the folder into your web root (e.g., `/var/www/html/twitter`) and navigate to it in your browser.
 
 4. **Register an account** and start chatting!
 
@@ -117,7 +117,7 @@ Want to chat with others on the same Wi-Fi?
 
 ## Admin Panel
 
-Chatlify includes a protected admin panel for managing users and chat history.
+Twitter includes a protected admin panel for managing users and chat history.
 
 - Access is protected by a **secret key** stored in `secret.json`
 - Two-step admin authentication via `secretadmin1.php` and `secretadmin2.php`
@@ -139,7 +139,7 @@ Admin users are visually distinguished in the chat with a **blue verified checkm
 
 ## Login Rate Limiting
 
-Chatlify includes built-in brute-force protection on the login page.
+Twitter includes built-in brute-force protection on the login page.
 
 - After **5 failed login attempts**, the IP address is automatically blocked
 - Block duration **escalates with each successive block** — starting at 10 minutes and doubling every time (10 min → 20 min → 40 min → ...)

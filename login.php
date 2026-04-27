@@ -326,7 +326,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$rl_blocked) {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chatlify</title>
+  <title>Twitter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta charset="UTF-8">
   <link rel="icon" href="love.png" type="image/png" />
@@ -613,7 +613,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$rl_blocked) {
   <div class="auth-container">
     <div class="auth-box">
 
-      <h2 class="auth-title">Chatlify</h2>
+      <h2 class="auth-title">Twitter</h2>
       <p class="auth-subtitle">Sign in to your account</p>
 
       <?php if (!empty($login_error)): ?>

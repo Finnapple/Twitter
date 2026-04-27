@@ -329,7 +329,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$rl_blocked) {
   <title>Twitter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta charset="UTF-8">
-  <link rel="icon" href="love.png" type="image/png" />
+  <link rel="icon" href="twitter.png" type="image/png" />
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');

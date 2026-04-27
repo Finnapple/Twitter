@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="twitter.png" alt="Twitter Logo" width="200">
+</div>
+
 # Twitter
 
 > **Real-time chat. Zero setup. Works everywhere.**

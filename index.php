@@ -168,7 +168,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chatlify</title>
+  <title>Twitter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta charset="UTF-8">
   <link rel="icon" href="twitter.png" type="image/png" />
@@ -1638,7 +1638,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
   <div class="app-container">
     <div class="header">
       <img src="twitter.png" alt="GhostLAN ghost logo" style="height:28px;width:28px;margin-right:10px;vertical-align:middle;display:inline-block;">
-      <h1 style="display:inline-block;vertical-align:middle;margin:0;font-size:18px;font-weight:400;">Chatlify</h1>
+      <h1 style="display:inline-block;vertical-align:middle;margin:0;font-size:18px;font-weight:400;">Twitter</h1>
       
       <div class="header-buttons">
           <!-- Dark mode button for all users -->

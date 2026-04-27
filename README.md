@@ -10,7 +10,7 @@
 
 </div>
 
-Twitter is a modern, lightweight real-time chat application built with **PHP** and **vanilla JavaScript** — no database, no frameworks, no headaches. Whether you're on a local network or hosting it on the web, Twitter just works.
+Twitter (Clone) is a modern, lightweight real-time chat application built with **PHP** and **vanilla JavaScript** — no database, no frameworks, no headaches. Whether you're on a local network or hosting it on the web, Twitter just works.
 
 ---
 

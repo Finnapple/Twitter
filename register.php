@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chatlify</title>
+  <title>Twitter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta charset="UTF-8">
   <link rel="icon" href="twitter.png" type="image/png" />
@@ -268,7 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <div class="auth-container">
     <div class="auth-box">
-      <h2 class="auth-title">Chatlify</h2>
+      <h2 class="auth-title">Twitter</h2>
       <p class="auth-subtitle">Create your account</p>
       <?php if (!empty($register_error)): ?>
       <div class="php-error-message" id="phpErrorMessage"><?php echo htmlspecialchars($register_error); ?></div>

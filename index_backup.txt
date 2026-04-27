@@ -171,7 +171,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
   <title>Chatlify</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta charset="UTF-8">
-  <link rel="icon" href="love.png" type="image/png" />
+  <link rel="icon" href="twitter.png" type="image/png" />
   <!-- Apply dark mode BEFORE page renders to prevent flash -->
   <script>
     (function() {
@@ -1637,7 +1637,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
 <body tabindex="-1">
   <div class="app-container">
     <div class="header">
-      <img src="love.png" alt="GhostLAN ghost logo" style="height:28px;width:28px;margin-right:10px;vertical-align:middle;display:inline-block;">
+      <img src="twitter.png" alt="GhostLAN ghost logo" style="height:28px;width:28px;margin-right:10px;vertical-align:middle;display:inline-block;">
       <h1 style="display:inline-block;vertical-align:middle;margin:0;font-size:18px;font-weight:400;">Chatlify</h1>
       
       <div class="header-buttons">
@@ -2660,7 +2660,7 @@ $dark_mode = isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === 'enabled'
 
       // Delay the actual POST by 0.3s to reduce rapid-fire spamming.
       // Keep the optimistic "Sending..." bubble visible immediately.
-      const SEND_DELAY_MS = 300;
+      const SEND_DELAY_MS = 100;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "send.php", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

@@ -445,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     <?php else : ?>
     <div class="auth-box" id="createAdminForm">
-      <h2 class="auth-title">Chatlify</h2>
+      <h2 class="auth-title">Twitter</h2>
       <p class="auth-subtitle">Create Admin Account</p>
 
       <?php if (!empty($error_message)) : ?>

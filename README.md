@@ -2,9 +2,13 @@
     <img src="twitter.png" alt="Twitter Logo" width="200">
 </div>
 
+<div align="center">
+    
 # Twitter
 
 > **Real-time chat. Zero setup. Works everywhere.**
+
+</div>
 
 Twitter is a modern, lightweight real-time chat application built with **PHP** and **vanilla JavaScript** — no database, no frameworks, no headaches. Whether you're on a local network or hosting it on the web, Twitter just works.
 

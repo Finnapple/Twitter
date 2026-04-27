@@ -231,8 +231,8 @@ function getCombinedChatAndUploads($chatlogFile, $uploadsDir, $currentUser) {
                             <path d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/>
                         </svg>
                     </div>
-                    <h3>Welcome to Chatlify by Finnapple</h3>
-                    <p>Chatlify is a versatile, modern real-time chat application built with PHP and vanilla JavaScript that works ANYWHERE - whether you're on a local area network (LAN) or browsing from anywhere in the world! No complicated setup, no database required - just pure, instant communication.</p>
+                    <h3>Welcome to Twitter (Clone) by Finnapple</h3>
+                    <p>Twitter is a versatile, modern real-time chat application built with PHP and vanilla JavaScript that works ANYWHERE - whether you're on a local area network (LAN) or browsing from anywhere in the world! No complicated setup, no database required - just pure, instant communication.</p>
                 </div>";
     }
 

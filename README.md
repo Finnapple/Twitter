@@ -40,6 +40,7 @@ Chatlify/
 ├── secretadmin1.php        # Admin panel (step 1)
 ├── secretadmin2.php        # Admin panel (step 2)
 ├── secretadmin3.php        # Admin panel (step 3)
+├── secretadmin4.php        # Admin panel (step 4)
 ├── admin.html              # Admin UI
 ├── chatlogs.json           # Chat message storage
 ├── users.json              # User data storage

@@ -6,7 +6,7 @@
     
 # Twitter
 
-> **Real-time chat. Zero setup. Works everywhere.**
+**Real-time chat. Zero setup. Works everywhere.**
 
 </div>
 
